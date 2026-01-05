@@ -1,5 +1,3 @@
-# Revision history for explainable-mcdm
-
 # Explainable Multi-Criteria Decision-Making with Dynamic Weights
 
 ## Overview
