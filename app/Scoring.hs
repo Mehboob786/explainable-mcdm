@@ -6,7 +6,7 @@ import Model
 weightedSum :: Alternative -> ScoreTable -> Weights -> Double
 weightedSum alt scores weights =
   sum
-    [ s * w
+    [ s * weightValue w
     | (a, c, s) <- scores
     , a == alt
     , (c', w) <- weights

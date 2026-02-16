@@ -2,81 +2,73 @@
 
 ## Overview
 
-This project presents a small, research-oriented prototype for **explaining results of multi-criteria decision-making (MCDM)** in settings where **decision weights evolve over time**. The focus is on *transparency* and *interpretability*, rather than predictive accuracy or large-scale optimization.
+This project is a research-oriented Haskell prototype for explaining Multi-Criteria Decision-Making (MCDM) outcomes when decision weights change over time.
 
-The prototype extends explanation-based MCDM techniques by tracing how **per-criterion contributions** change as weights are updated, thereby justifying why one alternative becomes preferred over another.
-
----
+The core goal is interpretability: the system shows not only which alternative wins, but also how each criterion contributes to ranking changes.
 
 ## Motivation
 
-Classical MCDM methods such as the **Weighted Sum Model (WSM)** compute aggregate scores for alternatives but typically provide limited insight into *why* a particular alternative is preferred. This lack of explanation can reduce user trust, especially in high-stakes decision-support systems.
+Classical MCDM methods such as the Weighted Sum Model (WSM) return aggregate scores but often do not provide transparent reasoning.
 
-Recent work by **Erwig & Kumar (2025)** introduces a framework for explaining MCDM outcomes by maintaining fine-grained representations of intermediate values and generating comparison-based explanations. However, most existing approaches assume **static decision weights**.
+This project extends explanation-focused MCDM by supporting dynamic weights and by exposing per-criterion contribution changes across time steps.
 
-This project explores the following question:
+## Current Features
 
-> *How can explanation-based MCDM be extended to scenarios where decision weights change dynamically over time?*
-
----
-
-## Approach
-
-The prototype implements:
-
-- A **formal model** of alternatives, criteria, scores, and weights
-- The **Weighted Sum Model (WSM)** for aggregating scores
-- **Fine-grained tracking of per-criterion contributions**
-- A simple model of **weight evolution**
-- **Comparison-based explanations** that highlight how and why rankings change
-
-All components are implemented using **pure functional programming in Haskell**, emphasizing immutability, compositionality, and clarity.
-
----
-
-## Example Scenario
-
-Two alternatives (`A` and `B`) are evaluated against three criteria:
-
-- Cost
-- Quality
-- Speed
-
-At time `T0`, the decision weights favor quality.  
-At time `T1`, cost becomes more important.
-
-The system produces:
-
-- Aggregate scores at each time step
-- Explanations such as:
-
-> *"Criterion 'Cost' increased its contribution from 0.60 to 0.80, amplifying Alternative A’s advantage and leading to a ranking change."*
-
-This makes explicit **which criteria caused the ranking shift and why**.
-
----
+- Weighted Sum Model (WSM) scoring for alternatives
+- Per-criterion contribution analysis between alternatives
+- Time-step comparison of contributions under changing weights
+- Hardened domain model with safer types (`Criterion`, `Alternative`, `Weight`)
+- Validation: non-negative weights
+- Validation: weight normalization check (sum approximately `1.0`)
+- Validation: duplicate weight detection
+- Validation: duplicate score-entry detection (`Alternative`, `Criterion`)
+- Validation: missing score detection for weighted criteria
 
 ## Project Structure
 
+```text
 app/
-├── Main.hs -- Example scenarios and execution
-├── Model.hs -- Core domain definitions
-├── Scoring.hs -- Weighted Sum Model implementation
-├── Explanation.hs -- Explanation logic
+├── Main.hs         -- Example scenario and execution flow
+├── Model.hs        -- Domain types + validation rules
+├── Scoring.hs      -- Weighted Sum Model implementation
+└── Explanation.hs  -- Contribution and explanation logic
+```
 
+## Installation
 
+### 1. Install GHC and Cabal (recommended: ghcup)
 
----
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | bash
+source ~/.zshrc
+```
+
+### 2. Verify tools
+
+```bash
+ghc --version
+cabal --version
+```
 
 ## How to Run
-
-### Requirements
-- GHC (tested with GHC 9.6.7)
-- Cabal
-
-### Run the project
 
 From the project root:
 
 ```bash
+cabal update
 cabal run
+```
+
+If model validation fails, the program prints a list of validation errors and skips scoring/explanation output.
+
+## Example Output Sections
+
+- Scores at time `T0`
+- Scores at time `T1`
+- Explanation of per-criterion contribution changes (`Cost`, `Quality`, `Speed`)
+
+## Next Improvements
+
+- Automated ranking-flip explanations (top drivers)
+- Time-series weight trajectories beyond two time points
+- Unit/property tests for validation and scoring invariants
